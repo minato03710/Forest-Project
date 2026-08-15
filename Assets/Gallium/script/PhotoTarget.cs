@@ -3,7 +3,8 @@ using UnityEngine;
 public class PhotoTarget : MonoBehaviour
 {
     [Header("Target Information")]
-    public string targetName = "Unknown";
+    public string targetID = "deer";
+    public string targetName = "Deer";
 
     [Header("Score")]
     public int score = 100;
@@ -12,6 +13,11 @@ public class PhotoTarget : MonoBehaviour
     public bool canBePhotographedAgain = false;
 
     private bool hasBeenPhotographed = false;
+
+    public string GetTargetID()
+    {
+        return targetID;
+    }
 
     public string GetTargetName()
     {
@@ -36,6 +42,12 @@ public class PhotoTarget : MonoBehaviour
     public void Photograph()
     {
         hasBeenPhotographed = true;
+
+        // ¸æËßÍ¼¼øÏµÍ³
+        if (CollectionManager.Instance != null)
+        {
+            CollectionManager.Instance.RegisterPhoto(targetID);
+        }
     }
 }
 
