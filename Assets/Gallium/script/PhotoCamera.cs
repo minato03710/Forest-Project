@@ -36,10 +36,13 @@ public class PhotoCamera : MonoBehaviour
 
     void Update()
     {
+        if (Time.timeScale == 0f)
+            return;
+
         DetectTarget();
 
         if (Mouse.current != null &&
-            Mouse.current.leftButton.wasPressedThisFrame)
+            Mouse.current.rightButton.wasPressedThisFrame)
         {
             TakePhoto();
         }

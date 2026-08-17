@@ -1,71 +1,69 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class CameraLook : MonoBehaviour
+public class CameraController : MonoBehaviour
 {
-    [Header("Camera Pivot")]
-    public Transform cameraPivot;
-
-    [Header("Mouse Settings")]
-    public float mouseSensitivity = 100f;
+    [Header("Camera Rotation")]
+    public float sensitivity = 100f;
 
     [Header("Vertical Limits")]
-    public float minVerticalAngle = -30f;
-    public float maxVerticalAngle = 30f;
+    public float minPitch = -30f;
+    public float maxPitch = 30f;
 
     [Header("Horizontal Limits")]
-    public float minHorizontalAngle = -80f;
-    public float maxHorizontalAngle = 80f;
+    public float minYaw = -70f;
+    public float maxYaw = 70f;
 
-    private float verticalRotation = 0f;
-    private float horizontalRotation = 0f;
+    private float yaw = 0f;
+    private float pitch = 0f;
+
+    void Start()
+    {
+        Vector3 currentRotation = transform.localEulerAngles;
+
+        yaw = currentRotation.y;
+        pitch = currentRotation.x;
+
+        if (pitch > 180f)
+        {
+            pitch -= 360f;
+        }
+    }
 
     void Update()
     {
-        if (Mouse.current == null)
+        // Gallery 打开时不要控制 Camera
+        if (Time.timeScale == 0f)
             return;
 
-        // Get mouse movement
-        Vector2 mouseDelta = Mouse.current.delta.ReadValue();
+        // 只有按住左键的时候才能移动 Camera
+        if (Mouse.current != null &&
+            Mouse.current.leftButton.isPressed)
+        {
+            Vector2 mouseDelta =
+                Mouse.current.delta.ReadValue();
 
-        float mouseX = mouseDelta.x;
-        float mouseY = mouseDelta.y;
+            yaw += mouseDelta.x * sensitivity * Time.deltaTime;
+            pitch -= mouseDelta.y * sensitivity * Time.deltaTime;
 
-        //Rotate left and right
-
-        horizontalRotation +=
-            mouseX * mouseSensitivity * Time.deltaTime;
-
-        horizontalRotation = Mathf.Clamp(
-            horizontalRotation,
-            minHorizontalAngle,
-            maxHorizontalAngle
-        );
-
-        cameraPivot.localRotation =
-            Quaternion.Euler(
-                0f,
-                horizontalRotation,
-                0f
+            yaw = Mathf.Clamp(
+                yaw,
+                minYaw,
+                maxYaw
             );
 
-
-        // Rotate up and down
-
-        verticalRotation -=
-            mouseY * mouseSensitivity * Time.deltaTime;
-
-        verticalRotation = Mathf.Clamp(
-            verticalRotation,
-            minVerticalAngle,
-            maxVerticalAngle
-        );
-
-        transform.localRotation =
-            Quaternion.Euler(
-                verticalRotation,
-                0f,
-                0f
+            pitch = Mathf.Clamp(
+                pitch,
+                minPitch,
+                maxPitch
             );
+
+            transform.localRotation =
+                Quaternion.Euler(
+                    pitch,
+                    yaw,
+                    0f
+                );
+        }
     }
 }
